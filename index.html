@@ -180,11 +180,24 @@
         #viewport-main.panning { cursor: grabbing; }
 
         @media print {
-            .sidebar { display: none !important; }
-            body { background: white; }
-            .viewport { padding: 0; background: white; }
-            #page-a4 { box-shadow: none; margin: 0; border: none; }
-            @page { size: A4; margin: 0; }
+            /* Masquer tout sauf la page A4 */
+            body * { visibility: hidden !important; }
+            #bottom-nav { display: none !important; }
+            #mobile-reglette-view { display: none !important; }
+            #help-modal { display: none !important; }
+
+            /* Afficher uniquement page-a4 et son contenu */
+            #page-a4, #page-a4 * { visibility: visible !important; }
+            #page-a4 {
+                position: fixed !important;
+                top: 0 !important; left: 0 !important;
+                width: 210mm !important; height: 297mm !important;
+                margin: 0 !important; padding: 0 !important;
+                box-shadow: none !important; border: none !important;
+                background: white !important;
+                transform: none !important;
+            }
+            @page { size: A4 portrait; margin: 0; }
             #page-a4, #page-a4 * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -971,7 +984,7 @@
 
 
         <!-- TABLEAU ANGLES MULTI-DISTANCES -->
-        <div class="card">
+        <div class="card" style="position:relative;z-index:1;isolation:isolate;overflow:hidden;">
             <div class="card-title">📐 Tableau Angles — Format Télémètre</div>
             <p style="font-size:0.65rem;color:var(--text-muted);margin-bottom:10px;">Génère un tableau imprimable (tous angles × toutes distances) à coller sur votre télémètre ou carquois.</p>
             <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;">
@@ -988,7 +1001,7 @@
                 </div>
             </div>
             <button class="btn btn-accent" onclick="generateAngleTable()" style="width:100%;margin-bottom:8px;">📊 Générer le tableau</button>
-            <div id="angle-table-preview" style="display:none;overflow-x:auto;max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;"></div>
+            <div id="angle-table-preview" style="display:none;overflow-x:auto;max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;position:relative;z-index:1;isolation:isolate;">;border-radius:6px;"></div>
         </div>    </div>
 
 </div><!-- /#a4-scaler -->
