@@ -2829,203 +2829,7 @@ function printAngleTable() {
     win.document.write('<h3>📐 Tableau Angles — ' + title + ' · ' + new Date().toLocaleDateString('fr-FR') + '</h3>');
     win.document.write(content.outerHTML);
     win.document.write('<script>window.onload=function(){window.print();}<\/script>');
-    win.document.write('
-<!-- ══ BOTTOM NAV ══ -->
-<nav id="bottom-nav">
-    <button class="bnav-btn active" onclick="mTab('tab-arrow',this)"><span class="bnav-icon">🏹</span><span>Flèche</span></button>
-    <button class="bnav-btn" onclick="mTab('tab-sight',this)"><span class="bnav-icon">🔭</span><span>Viseur</span></button>
-    <button class="bnav-btn" onclick="mTab('tab-atmo',this)"><span class="bnav-icon">🌤</span><span>Cond.</span></button>
-    <button class="bnav-btn" onclick="mTab('tab-points',this)"><span class="bnav-icon">🎯</span><span>Points</span></button>
-    <button class="bnav-btn" onclick="mTab('tab-styles',this)"><span class="bnav-icon">🎨</span><span>Style</span></button>
-    <button class="bnav-btn" id="bnav-ruler" onclick="openRuler()"><span class="bnav-icon">📏</span><span>Réglette</span></button>
-    <button class="bnav-btn" onclick="mTab('tab-print',this)"><span class="bnav-icon">🖨</span><span>Impr.</span></button>
-    <button class="bnav-btn" onclick="mTab('tab-tools',this)"><span class="bnav-icon">🛠</span><span>Outils</span></button>
-</nav>
-
-<!-- ══ VUE RÉGLETTE MOBILE ══ -->
-<div id="mobile-ruler-view">
-    <div id="mobile-ruler-header">
-        <button onclick="closeRuler()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444;border-radius:8px;padding:7px 14px;font-weight:800;font-size:0.75rem;cursor:pointer;min-height:36px;">✕ Fermer</button>
-        <div style="flex:1;text-align:center;font-size:0.72rem;font-weight:700;color:var(--text-muted);">Aperçu Réglette A4</div>
-        <button onclick="rulerFit()" style="background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;border-radius:8px;padding:7px 12px;font-weight:800;font-size:0.75rem;cursor:pointer;min-height:36px;" id="ruler-zoom-btn">⊞ Fit</button>
-    </div>
-    <div id="mobile-ruler-vp">
-        <div id="mobile-ruler-scaler"></div>
-    </div>
-    <div id="mobile-ruler-footer">
-        <button onclick="exportPDF()" class="btn btn-accent" style="flex:1;">📥 Export PDF</button>
-        <button onclick="window.print()" class="btn" style="flex:1;">🖨 Imprimer</button>
-    </div>
-</div>
-
-
-<script>
-// ── Mode jour/nuit ─────────────────────────────────────────────
-function toggleDay() {
-    const on = document.body.classList.toggle('day-mode');
-    const btn = document.getElementById('day-btn');
-    if (btn) { btn.textContent = on ? '🌙' : '☀️'; }
-    try { localStorage.setItem('stp_day', on?'1':'0'); } catch(e){}
-}
-try { if(localStorage.getItem('stp_day')==='1') { document.body.classList.add('day-mode'); const b=document.getElementById('day-btn'); if(b) b.textContent='🌙'; } } catch(e){}
-
-// ── Navigation mobile ──────────────────────────────────────────
-function mTab(id, btn) {
-    // Utiliser switchTab existant
-    const tabBtn = btn || document.querySelector('.bnav-btn[onclick*="'+id+'"]');
-    switchTab(id, tabBtn);
-    // Sync bottom nav
-    document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
-    if (tabBtn) tabBtn.classList.add('active');
-    closeRuler(true);
-}
-
-// ── Vue réglette mobile ────────────────────────────────────────
-let _rS = 1, _rX = 0, _rY = 0;
-
-function openRuler() {
-    renderRuler();
-    const view = document.getElementById('mobile-ruler-view');
-    const scaler = document.getElementById('mobile-ruler-scaler');
-    // Cloner la page A4
-    const orig = document.getElementById('page-a4');
-    scaler.innerHTML = '';
-    const clone = orig.cloneNode(true);
-    clone.id = 'page-a4-clone';
-    clone.style.transform = '';
-    scaler.appendChild(clone);
-    view.classList.add('open');
-    document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('bnav-ruler').classList.add('active');
-    requestAnimationFrame(rulerFit);
-}
-
-function closeRuler(silent) {
-    document.getElementById('mobile-ruler-view').classList.remove('open');
-    if (!silent) {
-        const active = document.querySelector('.tab-content.active');
-        if (active) {
-            const btn = document.querySelector('.bnav-btn[onclick*="'+active.id+'"]');
-            document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-        }
-    }
-}
-
-function rulerFit() {
-    const vp = document.getElementById('mobile-ruler-vp');
-    const sc = document.getElementById('mobile-ruler-scaler');
-    if (!vp || !sc) return;
-    const A4W = 794, A4H = 1123; // px à 96dpi
-    _rS = Math.min(vp.offsetWidth / A4W, vp.offsetHeight / A4H) * 0.96;
-    _rX = (vp.offsetWidth  - A4W * _rS) / 2;
-    _rY = (vp.offsetHeight - A4H * _rS) / 2;
-    applyRuler();
-}
-
-function applyRuler() {
-    const sc = document.getElementById('mobile-ruler-scaler');
-    if (!sc) return;
-    sc.style.transform = 'translate('+_rX+'px,'+_rY+'px) scale('+_rS+')';
-    const btn = document.getElementById('ruler-zoom-btn');
-    if (btn) btn.textContent = '⊞ ' + Math.round(_rS*100) + '%';
-}
-
-// Touch : pan + pinch zoom
-(function(){
-    let t0 = null, px0=0, py0=0, rx0=0, ry0=0, d0=0, s0=1;
-    function dist(a,b){ return Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY); }
-    function mid(a,b){ return {x:(a.clientX+b.clientX)/2, y:(a.clientY+b.clientY)/2}; }
-    document.addEventListener('DOMContentLoaded', ()=>{
-        const vp = document.getElementById('mobile-ruler-vp');
-        if(!vp) return;
-        vp.addEventListener('touchstart', e=>{
-            e.preventDefault();
-            if(e.touches.length===1){
-                t0=[{x:e.touches[0].clientX,y:e.touches[0].clientY}];
-                rx0=_rX; ry0=_rY; d0=0;
-            } else if(e.touches.length===2){
-                d0=dist(e.touches[0],e.touches[1]);
-                const m=mid(e.touches[0],e.touches[1]);
-                px0=m.x; py0=m.y; rx0=_rX; ry0=_rY; s0=_rS; t0=null;
-            }
-        },{passive:false});
-        vp.addEventListener('touchmove', e=>{
-            e.preventDefault();
-            if(e.touches.length===1 && t0){
-                _rX = rx0 + e.touches[0].clientX - t0[0].x;
-                _rY = ry0 + e.touches[0].clientY - t0[0].y;
-                applyRuler();
-            } else if(e.touches.length===2 && d0){
-                const nd=dist(e.touches[0],e.touches[1]);
-                const ratio=nd/d0;
-                _rS=Math.min(Math.max(s0*ratio,0.1),5);
-                const m=mid(e.touches[0],e.touches[1]);
-                _rX = rx0 + (m.x-px0) - (px0-rx0)*(ratio-1);
-                _rY = ry0 + (m.y-py0) - (py0-ry0)*(ratio-1);
-                applyRuler();
-            }
-        },{passive:false});
-        vp.addEventListener('touchend', e=>{
-            t0=null; d0=0;
-        });
-        // Double tap = fit
-        let last=0;
-        vp.addEventListener('touchend', e=>{
-            const now=Date.now();
-            if(now-last<300) rulerFit();
-            last=now;
-        });
-    });
-})();
-
-// ── @media print : afficher page-a4 proprement ────────────────
-window.addEventListener('beforeprint', ()=>{
-    document.getElementById('mobile-ruler-view')?.classList.remove('open');
-});
-
-// ── PWA : manifest + SW inline ────────────────────────────────
-(function(){
-    const manifest = JSON.stringify({
-        name:'Sight Tape Pro', short_name:'SightTape',
-        start_url:'./', display:'standalone',
-        background_color:'#020617', theme_color:'#0f172a',
-        orientation:'portrait',
-        icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%230f172a'/%3E%3Ccircle cx='256' cy='256' r='210' fill='none' stroke='%23ef4444' stroke-width='18'/%3E%3Ccircle cx='256' cy='256' r='140' fill='none' stroke='%23f59e0b' stroke-width='18'/%3E%3Ccircle cx='256' cy='256' r='70' fill='none' stroke='%2322c55e' stroke-width='18'/%3E%3Ccircle cx='256' cy='256' r='28' fill='%2338bdf8'/%3E%3C/svg%3E",sizes:'any',type:'image/svg+xml',purpose:'any maskable'}]
-    });
-    const ml = document.createElement('link');
-    ml.rel='manifest';
-    ml.href = URL.createObjectURL(new Blob([manifest],{type:'application/json'}));
-    document.head.appendChild(ml);
-
-    if('serviceWorker' in navigator){
-        const sw = `const C='stp-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['./'])).then(()=>self.skipWaiting()));});self.addEventListener('activate',e=>e.waitUntil(clients.claim()));self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match('./'))));});`;
-        navigator.serviceWorker.register(
-            URL.createObjectURL(new Blob([sw],{type:'application/javascript'})),
-            {scope:'./'}
-        ).catch(()=>{});
-    }
-
-    // Install banner
-    let dip=null;
-    window.addEventListener('beforeinstallprompt',e=>{
-        e.preventDefault(); dip=e;
-        const b=document.createElement('div');
-        b.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;font-size:0.72rem;font-weight:800;padding:8px 18px;border-radius:20px;cursor:pointer;z-index:9999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
-        b.textContent='📲 Installer Sight Tape Pro';
-        b.onclick=()=>{dip.prompt();b.remove();};
-        document.body.appendChild(b);
-        setTimeout(()=>b.remove(),6000);
-    });
-
-    // iOS bounce prevention
-    document.addEventListener('touchmove', e=>{
-        if(!e.target.closest('.tab-content, #mobile-ruler-vp')) e.preventDefault();
-    },{passive:false});
-})();
-</script>
-
-</body></html>');
+    win.document.write('<'+'/body></html>');
     win.document.close();
 }
 
@@ -3104,7 +2908,7 @@ function printPocketCard() {
     win.document.write('<!DOCTYPE html><html><head><title>Carte — ' + title + '</title>');
     win.document.write('<style>@page{size:85mm 54mm;margin:0}body{margin:2mm;padding:0}</style>');
     win.document.write('</head><body>' + card.outerHTML);
-    win.document.write('<script>window.onload=function(){window.print();}<\/script></body></html>');
+    win.document.write('<scr'+'ipt>window.onload=function(){window.print();}<'+'/script><'+'/body></html>');
     win.document.close();
 }
 
@@ -3120,7 +2924,7 @@ function printPocketCardA4() {
     // 4 copies par page A4 (pour plastifier et découper)
     for (let i=0; i<4; i++) win.document.write('<div class="card-copy">' + card.outerHTML + '</div>');
     win.document.write('<p style="width:100%;font-size:7pt;color:#999;margin-top:5mm;">✂ Découpez sur les pointillés · Plastifiez pour durabilité</p>');
-    win.document.write('<script>window.onload=function(){window.print();}<\/script></body></html>');
+    win.document.write('<scr'+'ipt>window.onload=function(){window.print();}<'+'/script><'+'/body></html>');
     win.document.close();
 }
 
@@ -3445,6 +3249,202 @@ function makePDF(jpegDataUrl, pageW, pageH, x, y, imgW, imgH) {
     </div>
   </div>
 </div>
+
+
+<!-- ══ BOTTOM NAV ══ -->
+<nav id="bottom-nav">
+    <button class="bnav-btn active" onclick="mTab('tab-arrow',this)"><span class="bnav-icon">🏹</span><span>Flèche</span></button>
+    <button class="bnav-btn" onclick="mTab('tab-sight',this)"><span class="bnav-icon">🔭</span><span>Viseur</span></button>
+    <button class="bnav-btn" onclick="mTab('tab-atmo',this)"><span class="bnav-icon">🌤</span><span>Cond.</span></button>
+    <button class="bnav-btn" onclick="mTab('tab-points',this)"><span class="bnav-icon">🎯</span><span>Points</span></button>
+    <button class="bnav-btn" onclick="mTab('tab-styles',this)"><span class="bnav-icon">🎨</span><span>Style</span></button>
+    <button class="bnav-btn" id="bnav-ruler" onclick="openRuler()"><span class="bnav-icon">📏</span><span>Réglette</span></button>
+    <button class="bnav-btn" onclick="mTab('tab-print',this)"><span class="bnav-icon">🖨</span><span>Impr.</span></button>
+    <button class="bnav-btn" onclick="mTab('tab-tools',this)"><span class="bnav-icon">🛠</span><span>Outils</span></button>
+</nav>
+
+<!-- ══ VUE RÉGLETTE MOBILE ══ -->
+<div id="mobile-ruler-view">
+    <div id="mobile-ruler-header">
+        <button onclick="closeRuler()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444;border-radius:8px;padding:7px 14px;font-weight:800;font-size:0.75rem;cursor:pointer;min-height:36px;">✕ Fermer</button>
+        <div style="flex:1;text-align:center;font-size:0.72rem;font-weight:700;color:var(--text-muted);">Aperçu Réglette A4</div>
+        <button onclick="rulerFit()" style="background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;border-radius:8px;padding:7px 12px;font-weight:800;font-size:0.75rem;cursor:pointer;min-height:36px;" id="ruler-zoom-btn">⊞ Fit</button>
+    </div>
+    <div id="mobile-ruler-vp">
+        <div id="mobile-ruler-scaler"></div>
+    </div>
+    <div id="mobile-ruler-footer">
+        <button onclick="exportPDF()" class="btn btn-accent" style="flex:1;">📥 Export PDF</button>
+        <button onclick="window.print()" class="btn" style="flex:1;">🖨 Imprimer</button>
+    </div>
+</div>
+
+
+<script>
+// ── Mode jour/nuit ─────────────────────────────────────────────
+function toggleDay() {
+    const on = document.body.classList.toggle('day-mode');
+    const btn = document.getElementById('day-btn');
+    if (btn) { btn.textContent = on ? '🌙' : '☀️'; }
+    try { localStorage.setItem('stp_day', on?'1':'0'); } catch(e){}
+}
+try { if(localStorage.getItem('stp_day')==='1') { document.body.classList.add('day-mode'); const b=document.getElementById('day-btn'); if(b) b.textContent='🌙'; } } catch(e){}
+
+// ── Navigation mobile ──────────────────────────────────────────
+function mTab(id, btn) {
+    // Utiliser switchTab existant
+    const tabBtn = btn || document.querySelector('.bnav-btn[onclick*="'+id+'"]');
+    switchTab(id, tabBtn);
+    // Sync bottom nav
+    document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+    if (tabBtn) tabBtn.classList.add('active');
+    closeRuler(true);
+}
+
+// ── Vue réglette mobile ────────────────────────────────────────
+let _rS = 1, _rX = 0, _rY = 0;
+
+function openRuler() {
+    renderRuler();
+    const view = document.getElementById('mobile-ruler-view');
+    const scaler = document.getElementById('mobile-ruler-scaler');
+    // Cloner la page A4
+    const orig = document.getElementById('page-a4');
+    scaler.innerHTML = '';
+    const clone = orig.cloneNode(true);
+    clone.id = 'page-a4-clone';
+    clone.style.transform = '';
+    scaler.appendChild(clone);
+    view.classList.add('open');
+    document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('bnav-ruler').classList.add('active');
+    requestAnimationFrame(rulerFit);
+}
+
+function closeRuler(silent) {
+    document.getElementById('mobile-ruler-view').classList.remove('open');
+    if (!silent) {
+        const active = document.querySelector('.tab-content.active');
+        if (active) {
+            const btn = document.querySelector('.bnav-btn[onclick*="'+active.id+'"]');
+            document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+        }
+    }
+}
+
+function rulerFit() {
+    const vp = document.getElementById('mobile-ruler-vp');
+    const sc = document.getElementById('mobile-ruler-scaler');
+    if (!vp || !sc) return;
+    const A4W = 794, A4H = 1123; // px à 96dpi
+    _rS = Math.min(vp.offsetWidth / A4W, vp.offsetHeight / A4H) * 0.96;
+    _rX = (vp.offsetWidth  - A4W * _rS) / 2;
+    _rY = (vp.offsetHeight - A4H * _rS) / 2;
+    applyRuler();
+}
+
+function applyRuler() {
+    const sc = document.getElementById('mobile-ruler-scaler');
+    if (!sc) return;
+    sc.style.transform = 'translate('+_rX+'px,'+_rY+'px) scale('+_rS+')';
+    const btn = document.getElementById('ruler-zoom-btn');
+    if (btn) btn.textContent = '⊞ ' + Math.round(_rS*100) + '%';
+}
+
+// Touch : pan + pinch zoom
+(function(){
+    let t0 = null, px0=0, py0=0, rx0=0, ry0=0, d0=0, s0=1;
+    function dist(a,b){ return Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY); }
+    function mid(a,b){ return {x:(a.clientX+b.clientX)/2, y:(a.clientY+b.clientY)/2}; }
+    document.addEventListener('DOMContentLoaded', ()=>{
+        const vp = document.getElementById('mobile-ruler-vp');
+        if(!vp) return;
+        vp.addEventListener('touchstart', e=>{
+            e.preventDefault();
+            if(e.touches.length===1){
+                t0=[{x:e.touches[0].clientX,y:e.touches[0].clientY}];
+                rx0=_rX; ry0=_rY; d0=0;
+            } else if(e.touches.length===2){
+                d0=dist(e.touches[0],e.touches[1]);
+                const m=mid(e.touches[0],e.touches[1]);
+                px0=m.x; py0=m.y; rx0=_rX; ry0=_rY; s0=_rS; t0=null;
+            }
+        },{passive:false});
+        vp.addEventListener('touchmove', e=>{
+            e.preventDefault();
+            if(e.touches.length===1 && t0){
+                _rX = rx0 + e.touches[0].clientX - t0[0].x;
+                _rY = ry0 + e.touches[0].clientY - t0[0].y;
+                applyRuler();
+            } else if(e.touches.length===2 && d0){
+                const nd=dist(e.touches[0],e.touches[1]);
+                const ratio=nd/d0;
+                _rS=Math.min(Math.max(s0*ratio,0.1),5);
+                const m=mid(e.touches[0],e.touches[1]);
+                _rX = rx0 + (m.x-px0) - (px0-rx0)*(ratio-1);
+                _rY = ry0 + (m.y-py0) - (py0-ry0)*(ratio-1);
+                applyRuler();
+            }
+        },{passive:false});
+        vp.addEventListener('touchend', e=>{
+            t0=null; d0=0;
+        });
+        // Double tap = fit
+        let last=0;
+        vp.addEventListener('touchend', e=>{
+            const now=Date.now();
+            if(now-last<300) rulerFit();
+            last=now;
+        });
+    });
+})();
+
+// ── @media print : afficher page-a4 proprement ────────────────
+window.addEventListener('beforeprint', ()=>{
+    document.getElementById('mobile-ruler-view')?.classList.remove('open');
+});
+
+// ── PWA : manifest + SW inline ────────────────────────────────
+(function(){
+    const manifest = JSON.stringify({
+        name:'Sight Tape Pro', short_name:'SightTape',
+        start_url:'./', display:'standalone',
+        background_color:'#020617', theme_color:'#0f172a',
+        orientation:'portrait',
+        icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%230f172a'/%3E%3Ccircle cx='256' cy='256' r='210' fill='none' stroke='%23ef4444' stroke-width='18'/%3E%3Ccircle cx='256' cy='256' r='140' fill='none' stroke='%23f59e0b' stroke-width='18'/%3E%3Ccircle cx='256' cy='256' r='70' fill='none' stroke='%2322c55e' stroke-width='18'/%3E%3Ccircle cx='256' cy='256' r='28' fill='%2338bdf8'/%3E%3C/svg%3E",sizes:'any',type:'image/svg+xml',purpose:'any maskable'}]
+    });
+    const ml = document.createElement('link');
+    ml.rel='manifest';
+    ml.href = URL.createObjectURL(new Blob([manifest],{type:'application/json'}));
+    document.head.appendChild(ml);
+
+    if('serviceWorker' in navigator){
+        const sw = `const C='stp-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['./'])).then(()=>self.skipWaiting()));});self.addEventListener('activate',e=>e.waitUntil(clients.claim()));self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match('./'))));});`;
+        navigator.serviceWorker.register(
+            URL.createObjectURL(new Blob([sw],{type:'application/javascript'})),
+            {scope:'./'}
+        ).catch(()=>{});
+    }
+
+    // Install banner
+    let dip=null;
+    window.addEventListener('beforeinstallprompt',e=>{
+        e.preventDefault(); dip=e;
+        const b=document.createElement('div');
+        b.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;font-size:0.72rem;font-weight:800;padding:8px 18px;border-radius:20px;cursor:pointer;z-index:9999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+        b.textContent='📲 Installer Sight Tape Pro';
+        b.onclick=()=>{dip.prompt();b.remove();};
+        document.body.appendChild(b);
+        setTimeout(()=>b.remove(),6000);
+    });
+
+    // iOS bounce prevention
+    document.addEventListener('touchmove', e=>{
+        if(!e.target.closest('.tab-content, #mobile-ruler-vp')) e.preventDefault();
+    },{passive:false});
+})();
+</script>
 
 </body>
 </html>
