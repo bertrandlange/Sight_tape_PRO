@@ -179,16 +179,45 @@
         #viewport-main.panning { cursor: grabbing; }
 
         @media print {
-            .sidebar { display: none !important; }
-            body { background: white; }
-            .viewport { padding: 0; background: white; }
-            #page-a4 { box-shadow: none; margin: 0; border: none; }
-            @page { size: A4; margin: 0; }
-            #page-a4, #page-a4 * {
+            html, body {
+                background: #ffffff !important;
+                height: auto !important;
+                overflow: visible !important;
+                position: static !important;
+                display: block !important;
+                width: 100% !important;
+            }
+            /* Tout cacher */
+            .sidebar, #bottom-nav, #mobile-ruler-view, #help-modal { display: none !important; }
+            /* Montrer uniquement la zone A4 */
+            main.viewport {
+                display: block !important;
+                background: #ffffff !important;
+                padding: 0 !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                overflow: visible !important;
+            }
+            #a4-scaler {
+                transform: none !important;
+                position: static !important;
+                display: block !important;
+            }
+            #page-a4 {
+                box-shadow: none !important;
+                margin: 0 !important;
+                border: none !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                background: #ffffff !important;
+                position: static !important;
+                display: block !important;
+            }
+            #page-a4 * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
-                color-adjust: exact !important;
             }
+            @page { size: A4 portrait; margin: 0; }
         }
 
         /* ══ MODE JOUR ══════════════════════════════════════════ */
@@ -948,10 +977,10 @@
         <!-- TABLEAU ANGLES MULTI-DISTANCES -->
         <div class="card">
             <div class="card-title">📐 Tableau Angles — Format Télémètre</div>
-            <p style="font-size:0.65rem;color:var(--text-muted);margin-bottom:10px;">Génère un tableau imprimable (tous angles × toutes distances) à coller sur votre télémètre ou carquois.</p>
+            <p style="font-size:0.65rem;color:var(--text-muted);margin-bottom:10px;">S'ouvre dans une nouvelle fenêtre imprimable (A4 paysage).</p>
             <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;">
                 <div class="field" style="flex:2;min-width:120px;margin:0;">
-                    <label>Angles à calculer (séparés par virgule)</label>
+                    <label>Angles (séparés par virgule)</label>
                     <input type="text" id="angle_table_input" value="5,10,15,20,25,30,35,40,45" style="font-size:0.7rem;">
                 </div>
                 <div class="field" style="width:110px;margin:0;">
@@ -962,8 +991,7 @@
                     </select>
                 </div>
             </div>
-            <button class="btn btn-accent" onclick="generateAngleTable()" style="width:100%;margin-bottom:8px;">📊 Générer le tableau</button>
-            <div id="angle-table-preview" style="display:none;overflow-x:auto;max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;"></div>
+            <button class="btn btn-accent" onclick="generateAngleTable()" style="width:100%;">📊 Générer et ouvrir</button>
         </div>    </div>
 
 </div><!-- /#a4-scaler -->
@@ -2745,71 +2773,64 @@ function loadPresetDistances(preset) {
 
 // ══ 3. TABLEAU ANGLES MULTI-DISTANCES ═════════════════════════════════
 function generateAngleTable() {
-    const input   = document.getElementById('angle_table_input').value;
-    const fmt     = document.getElementById('angle_table_fmt').value;
-    const ratio   = fv('cfg_ratio', 1.0) * getCalibFactor();
-    const dists   = DISTANCES.filter(isInRange);
-    const preview = document.getElementById('angle-table-preview');
+    const input  = document.getElementById('angle_table_input').value;
+    const fmt    = document.getElementById('angle_table_fmt').value;
+    const ratio  = fv('cfg_ratio', 1.0) * getCalibFactor();
+    const dists  = DISTANCES.filter(isInRange);
+    const title  = document.getElementById('cfg_doc_title').value || 'SIGHT TAPE PRO';
 
-    const angles = input.split(',')
-        .map(s => parseFloat(s.trim()))
-        .filter(a => !isNaN(a) && a > 0 && a <= 75);
-
+    const angles = input.split(',').map(s => parseFloat(s.trim())).filter(a => !isNaN(a) && a > 0 && a <= 75);
     if (angles.length === 0 || dists.length === 0) {
-        preview.style.display = 'block';
-        preview.innerHTML = '<div style="color:#ef4444;font-size:0.7rem;">Entrez des angles valides (ex: 5,10,15,20,30,45)</div>';
+        showToast('Entrez des angles valides (ex: 5,10,15,20,30,45)', 'rgba(239,68,68,0.9)');
         return;
     }
 
-    // Table : lignes = distances, colonnes = angles
-    let html = '<table style="border-collapse:collapse;font-size:0.6rem;width:100%;">';
-    html += '<thead><tr style="background:#1e293b;color:#fff;">';
-    html += '<th style="padding:4px 6px;position:sticky;left:0;background:#1e293b;border-right:1px solid #334155;">Dist</th>';
-    html += '<th style="padding:4px 6px;text-align:center;border-right:1px solid #475569;">0° (plat)</th>';
-    angles.forEach(a => {
-        html += '<th style="padding:4px 6px;text-align:center;">' + a + '°</th>';
-    });
-    html += '</tr></thead><tbody>';
+    let thead = '<tr style="background:#1e3a5f;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;">';
+    thead += '<th style="padding:5px 7px;border:0.4pt solid #334;">Dist</th>';
+    thead += '<th style="padding:5px 7px;border:0.4pt solid #334;text-align:center;">0°</th>';
+    angles.forEach(a => { thead += '<th style="padding:5px 7px;border:0.4pt solid #334;text-align:center;">' + a + '\xb0</th>'; });
+    thead += '</tr>';
 
+    let rows = '';
     dists.forEach((d, i) => {
-        const baseU  = REG[d] ? REG[d].val : calcUforDist(d);
-        const baseMm = baseU * ratio;
-        const bg     = i%2===0 ? '#1a2332' : '#151f2d';
-        html += '<tr style="background:' + bg + ';">';
-        html += '<td style="padding:3px 6px;font-weight:700;color:#38bdf8;position:sticky;left:0;background:'+bg+';border-right:1px solid #334155;">' + d + 'm</td>';
-        // Colonne 0°
-        const flatVal = fmt === 'mm' ? baseMm.toFixed(1)+'mm' : baseU.toFixed(1)+'U';
-        html += '<td style="padding:3px 6px;text-align:center;color:#94a3b8;border-right:1px solid #475569;">' + flatVal + '</td>';
-        // Colonnes angles
+        const baseU = REG[d] ? REG[d].val : calcUforDist(d);
+        const bg = i % 2 === 0 ? '#f0f4f8' : '#ffffff';
+        rows += '<tr style="background:' + bg + ';-webkit-print-color-adjust:exact;print-color-adjust:exact;">';
+        rows += '<td style="padding:4px 7px;border:0.4pt solid #ccc;font-weight:700;color:#0369a1;">' + d + 'm</td>';
+        const flatVal = fmt === 'mm' ? (baseU * ratio).toFixed(1) + 'mm' : baseU.toFixed(1) + 'U';
+        rows += '<td style="padding:4px 7px;border:0.4pt solid #ccc;text-align:center;color:#64748b;">' + flatVal + '</td>';
         angles.forEach(a => {
-            const cos      = Math.cos(a * Math.PI / 180);
-            const horizD   = d * cos;
-            const adjU     = calcUforDist(horizD);
-            const adjMm    = adjU * ratio;
-            const val      = fmt === 'mm' ? adjMm.toFixed(1)+'mm' : adjU.toFixed(1)+'U';
-            const diff     = adjU - baseU;
-            // Couleur : vert si différence < -0.3U (marque descend = moins de correction)
-            //            orange si différence > 0.3U
-            const color    = Math.abs(diff) < 0.3 ? '#94a3b8' : diff < 0 ? '#22c55e' : '#f59e0b';
-            html += '<td style="padding:3px 6px;text-align:center;color:'+color+';">' + val + '</td>';
+            const adjU  = calcUforDist(d * Math.cos(a * Math.PI / 180));
+            const val   = fmt === 'mm' ? (adjU * ratio).toFixed(1) + 'mm' : adjU.toFixed(1) + 'U';
+            const diff  = adjU - baseU;
+            const color = Math.abs(diff) < 0.3 ? '#334155' : diff < 0 ? '#16a34a' : '#d97706';
+            rows += '<td style="padding:4px 7px;border:0.4pt solid #ccc;text-align:center;color:' + color + ';">' + val + '</td>';
         });
-        html += '</tr>';
+        rows += '</tr>';
     });
-    html += '</tbody></table>';
 
-    // Légende + bouton imprimer
-    html += '<div style="margin-top:8px;font-size:0.58rem;color:var(--text-muted);padding:0 4px;">';
-    html += '🟢 marque réduite (tir en descente/montée) · 🟠 marque augmentée · colonne 0° = tir plat';
-    html += '</div>';
+    const html = '<!DOCTYPE html><html><head>'
+        + '<meta charset="utf-8">'
+        + '<title>Angles \u2014 ' + title + '</title>'
+        + '<style>'
+        + '@page{size:A4 landscape;margin:10mm}'
+        + 'body{font-family:system-ui,sans-serif;background:#fff;color:#000;padding:8px;}'
+        + 'h2{font-size:11pt;margin-bottom:6px;color:#1e3a5f;}'
+        + 'table{border-collapse:collapse;width:100%;font-size:8pt;}'
+        + '.legend{font-size:7pt;color:#666;margin-top:6px;}'
+        + '.pbtn{margin-bottom:8px;padding:7px 16px;background:#0369a1;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:9pt;}'
+        + '@media print{.pbtn{display:none!important;}}'
+        + '</style></head><body>'
+        + '<button class="pbtn" onclick="window.print()">&#128424; Imprimer</button>'
+        + '<h2>&#128208; Tableau Angles \u2014 ' + title + ' \u00b7 ' + new Date().toLocaleDateString('fr-FR') + '</h2>'
+        + '<table><thead>' + thead + '</thead><tbody>' + rows + '</tbody></table>'
+        + '<div class="legend">&#127802; marque r\u00e9duite (pente) &nbsp;|&nbsp; &#127810; marque augment\u00e9e &nbsp;|&nbsp; 0\u00b0 = tir plat</div>'
+        + '<'+'/body></html>';
 
-    preview.style.display = 'block';
-    preview.innerHTML = html;
-
-    // Bouton imprimer en dehors du tableau scrollable
-    const btnWrap = document.createElement('div');
-    btnWrap.style.marginTop = '8px';
-    btnWrap.innerHTML = '<button class="btn" onclick="printAngleTable()" style="width:100%;font-size:0.68rem;">🖨 Imprimer ce tableau (A4 paysage)</button>';
-    preview.parentElement.appendChild(btnWrap);
+    const win = window.open('', '_blank');
+    if (!win) { showToast('Autorisez les popups pour ce site', 'rgba(239,68,68,0.9)'); return; }
+    win.document.write(html);
+    win.document.close();
 }
 
 function printAngleTable() {
