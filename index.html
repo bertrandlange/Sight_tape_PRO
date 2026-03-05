@@ -7,45 +7,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SightTape">
     <meta name="theme-color" content="#0f172a">
-    <title>Sight Tape Pro</title>
+    <title>Sight Tape Pro — Archery Sight Tape Designer</title>
     <style>
-
         :root {
             --bg-main: #020617; --bg-panel: #0f172a; --bg-card: #1e293b;
             --text-primary: #f8fafc; --text-muted: #64748b;
             --accent: #38bdf8; --success: #22c55e; --warning: #f59e0b; --danger: #ef4444;
             --border: #334155;
         }
-        /* ── MODE JOUR ─────────────────────────────────────────── */
-        body.day-mode {
-            --bg-main:    #f1f5f9;
-            --bg-panel:   #ffffff;
-            --bg-card:    #f8fafc;
-            --text-primary: #0f172a;
-            --text-muted:   #64748b;
-            --accent:     #0284c7;
-            --success:    #16a34a;
-            --warning:    #d97706;
-            --danger:     #dc2626;
-            --border:     #cbd5e1;
-        }
-        body.day-mode input,
-        body.day-mode select {
-            background: #ffffff !important;
-            color: #0f172a !important;
-            border-color: #cbd5e1 !important;
-        }
-        body.day-mode select option { background: #ffffff; color: #0f172a; }
-        body.day-mode .app-header { background: #0284c7 !important; }
-        body.day-mode .app-title  { color: #ffffff !important; }
-        body.day-mode .app-title span { color: #e0f2fe !important; }
-        body.day-mode #bottom-nav { background: #ffffff !important; border-top-color: #cbd5e1 !important; }
-        body.day-mode .bnav-btn   { color: #94a3b8 !important; }
-        body.day-mode .bnav-btn.active { color: #0284c7 !important; }
-        body.day-mode .tab-bar    { background: #f1f5f9 !important; }
-        body.day-mode .stat-box   { background: #f1f5f9 !important; }
-        body.day-mode .btn        { border: 1px solid #cbd5e1; }
-        body.day-mode .btn-accent { background: #0284c7 !important; color: #fff !important; border: none !important; }
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
         body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-main); color: var(--text-primary); display: flex; height: 100vh; width: 100vw; overflow: hidden; }
 
@@ -54,8 +23,7 @@
         .tab-btn { flex: 1 0 auto; min-width: 80px; padding: 9px 4px; font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; cursor: pointer; border: none; background: transparent; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.2s; text-align:center; }
         .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
         .tab-btn:hover:not(.active) { color: var(--text-primary); }
-        .tab-content { display: none; flex-direction: column; overflow-y: auto; overflow-x: hidden; padding: 18px; flex: 1; scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
-        .tab-content > .card { contain: layout; }ain: layout; }
+        .tab-content { display: none; flex-direction: column; overflow-y: auto; padding: 18px; flex: 1; scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
         .tab-content.active { display: flex; }
 
         .card { background: var(--bg-card); border-radius: 12px; padding: 16px; margin-bottom: 14px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
@@ -211,202 +179,141 @@
         #viewport-main.panning { cursor: grabbing; }
 
         @media print {
-            /* Reset complet pour l'impression */
-            html, body {
-                background: #ffffff !important;
-                color: #000000 !important;
-                height: auto !important;
-                width: auto !important;
-                overflow: visible !important;
-                position: static !important;
-                display: block !important;
-            }
-            /* Masquer tout sauf la page A4 */
-            body > * { display: none !important; }
-            /* Rendre le main visible */
-            #viewport-main {
-                display: block !important;
-                position: static !important;
-                width: 210mm !important;
-                height: 297mm !important;
-                background: #ffffff !important;
-                overflow: visible !important;
-                flex-grow: 0 !important;
-            }
-            #a4-scaler {
-                transform: none !important;
-                position: static !important;
-                display: block !important;
-            }
-            #page-a4 {
-                display: block !important;
-                box-shadow: none !important;
-                margin: 0 !important;
-                border: none !important;
-                width: 210mm !important;
-                height: 297mm !important;
-                transform: none !important;
-                background: #ffffff !important;
-                position: static !important;
-            }
+            .sidebar { display: none !important; }
+            body { background: white; }
+            .viewport { padding: 0; background: white; }
+            #page-a4 { box-shadow: none; margin: 0; border: none; }
+            @page { size: A4; margin: 0; }
             #page-a4, #page-a4 * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
                 color-adjust: exact !important;
             }
-            @page { size: A4 portrait; margin: 0; }
-        }
-    
-
-        /* ══ PWA / MOBILE OVERRIDES ══════════════════════════════ */
-        html { height: 100%; }
-        body {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            height: -webkit-fill-available;
-            width: 100vw;
-            overflow: hidden;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
         }
 
-        /* Masquer la sidebar desktop et la remplacer par full-screen */
-        .sidebar {
-            width: 100% !important;
-            min-width: 0 !important;
-            border-right: none !important;
-            flex: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            order: 1;
-            contain: strict;
+        /* ══ MODE JOUR ══════════════════════════════════════════ */
+        body.day-mode {
+            --bg-main: #f1f5f9; --bg-panel: #ffffff; --bg-card: #f8fafc;
+            --text-primary: #0f172a; --text-muted: #64748b;
+            --accent: #0284c7; --border: #cbd5e1;
         }
+        body.day-mode input, body.day-mode select {
+            background: #fff !important; color: #0f172a !important; border-color: #cbd5e1 !important;
+        }
+        body.day-mode select option { background: #fff; color: #0f172a; }
+        body.day-mode .btn { border: 1px solid #cbd5e1; }
+        body.day-mode .btn-accent { background: #0284c7 !important; color: #fff !important; border: none !important; }
+        body.day-mode .stat-box { background: #e2e8f0 !important; }
 
-        /* App header compact mobile */
-        .app-header {
-            padding: 10px 14px 8px !important;
-            flex-shrink: 0;
-        }
-        .app-logo svg { width: 30px !important; height: 30px !important; }
-        .app-title { font-size: 1.1rem !important; }
-        .app-subtitle { display: none; }
+        /* ══ MOBILE PWA (<768px) ════════════════════════════════ */
+        @media (max-width: 767px) {
+            body {
+                flex-direction: column;
+                height: 100dvh;
+                overflow: hidden;
+                position: fixed;
+                inset: 0;
+            }
+            /* Sidebar = plein écran */
+            .sidebar {
+                width: 100% !important;
+                min-width: 0 !important;
+                border-right: none !important;
+                flex: 1;
+                min-height: 0;
+                overflow: hidden;
+            }
+            /* Header compact */
+            .app-header { padding: 8px 12px !important; padding-top: calc(8px + env(safe-area-inset-top)) !important; }
+            .app-logo svg { width: 28px !important; height: 28px !important; }
+            .app-title { font-size: 1rem !important; }
+            .app-subtitle { display: none !important; }
+            /* Masquer tab-bar desktop → remplacée par bottom-nav */
+            .tab-bar { display: none !important; }
+            /* Contenu onglets : scroll interne, espace pour bottom nav */
+            .tab-content {
+                padding: 12px !important;
+                padding-bottom: calc(70px + env(safe-area-inset-bottom)) !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                -webkit-overflow-scrolling: touch;
+            }
+            /* Masquer la zone A4 desktop */
+            main.viewport { display: none !important; }
+            /* Inputs/boutons adaptés au doigt */
+            input, select { min-height: 44px; font-size: 0.92rem !important; }
+            .btn { min-height: 44px; }
+            .card { padding: 12px !important; margin-bottom: 10px !important; }
+            .grid3 { grid-template-columns: 1fr 1fr !important; }
 
-        /* Tab bar → bottom nav (masquée, remplacée par bottom-nav) */
-        .tab-bar { display: none !important; }
+            /* ── BOTTOM NAV ──────────────────────────────────── */
+            #bottom-nav {
+                position: fixed;
+                bottom: 0; left: 0; right: 0;
+                height: calc(56px + env(safe-area-inset-bottom));
+                padding-bottom: env(safe-area-inset-bottom);
+                background: #0f172a;
+                border-top: 1px solid var(--border);
+                display: flex;
+                z-index: 100;
+                box-shadow: 0 -2px 12px rgba(0,0,0,0.4);
+            }
+            body.day-mode #bottom-nav { background: #ffffff; }
+            .bnav-btn {
+                flex: 1;
+                display: flex; flex-direction: column;
+                align-items: center; justify-content: center;
+                gap: 2px;
+                background: transparent; border: none;
+                color: var(--text-muted);
+                font-size: 0.42rem; font-weight: 700;
+                text-transform: uppercase; letter-spacing: 0.2px;
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+                padding: 6px 2px;
+            }
+            .bnav-icon { font-size: 1.3rem; line-height: 1; }
+            .bnav-btn.active { color: var(--accent); }
 
-        /* Contenu onglets */
-        .tab-content {
-            padding: 12px 14px !important;
-            padding-bottom: 80px !important; /* espace pour bottom nav */
-            -webkit-overflow-scrolling: touch;
+            /* ── VUE RÉGLETTE PLEIN ÉCRAN ────────────────────── */
+            #mobile-ruler-view {
+                display: none;
+                position: fixed;
+                inset: 0;
+                z-index: 200;
+                background: var(--bg-main);
+                flex-direction: column;
+            }
+            #mobile-ruler-view.open { display: flex; }
+            #mobile-ruler-header {
+                display: flex; align-items: center; gap: 8px;
+                padding: 10px 12px;
+                padding-top: calc(10px + env(safe-area-inset-top));
+                background: var(--bg-panel);
+                border-bottom: 1px solid var(--border);
+                flex-shrink: 0;
+            }
+            #mobile-ruler-vp {
+                flex: 1; overflow: hidden; position: relative;
+                background: #94a3b8;
+                touch-action: none;
+            }
+            #mobile-ruler-scaler {
+                position: absolute;
+                transform-origin: 0 0;
+            }
+            #mobile-ruler-footer {
+                display: flex; gap: 8px;
+                padding: 8px 12px;
+                padding-bottom: calc(8px + env(safe-area-inset-bottom));
+                background: var(--bg-panel);
+                border-top: 1px solid var(--border);
+            }
         }
-
-        /* Inputs plus grands pour les doigts */
-        input, select {
-            padding: 11px 13px !important;
-            font-size: 0.95rem !important;
-            min-height: 44px;
-        }
-        .btn { min-height: 44px; font-size: 0.72rem !important; }
-        .btn-full { padding: 14px !important; font-size: 0.85rem !important; }
-
-        /* Cards légèrement moins padding */
-        .card { padding: 13px 12px !important; margin-bottom: 10px !important; }
-        .card-title { font-size: 0.72rem !important; margin-bottom: 10px !important; }
-
-        /* Grid adaptatif */
-        .grid2 { gap: 9px !important; }
-        .grid3 { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
-        .stat-grid { grid-template-columns: repeat(3,1fr) !important; gap: 5px !important; }
-        .stat-val { font-size: 0.9rem !important; }
-        .stat-lbl { font-size: 0.5rem !important; }
-
-        /* Masquer le main A4 desktop (remplacé par vue dédiée) */
-        main#viewport-main {
-            display: none !important;
-        }
-
-        /* ── BOTTOM NAV ────────────────────────────────────────── */
-        #bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: 64px;
-            background: #0f172a;
-            border-top: 1px solid var(--border);
-            display: flex;
-            align-items: stretch;
-            z-index: 1000;
-            padding-bottom: env(safe-area-inset-bottom);
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
-        }
-        .bnav-btn {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            font-size: 0.48rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            cursor: pointer;
-            transition: color 0.15s;
-            -webkit-tap-highlight-color: transparent;
-            padding: 0 2px;
-        }
-        .bnav-btn .bnav-icon { font-size: 1.4rem; line-height: 1; }
-        .bnav-btn.active { color: var(--accent); }
-        .bnav-btn.active .bnav-icon { filter: drop-shadow(0 0 6px rgba(56,189,248,0.6)); }
-
-        /* ── VUE RÉGLETTE MOBILE (plein écran) ─────────────────── */
-        #mobile-reglette-view {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: var(--bg-main);
-            z-index: 800;
-            flex-direction: column;
-        }
-        #mobile-reglette-view.active { display: flex; }
-        #mobile-reglette-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 14px;
-            padding-top: calc(12px + env(safe-area-inset-top));
-            background: var(--bg-panel);
-            border-bottom: 1px solid var(--border);
-            flex-shrink: 0;
-        }
-        #mobile-reglette-viewport {
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-            background: #e8e8e8;
-            touch-action: none;
-        }
-        #mobile-a4-scaler {
-            position: absolute;
-            transform-origin: center center;
-        }
-        #mobile-reglette-footer {
-            display: flex;
-            gap: 8px;
-            padding: 10px 14px;
-            padding-bottom: calc(10px + env(safe-area-inset-bottom));
-            background: var(--bg-panel);
-            border-top: 1px solid var(--border);
-        }
-
-        /* ── SAFE AREAS iOS ────────────────────────────────────── */
-        .app-header {
-            padding-top: calc(10px + env(safe-area-inset-top)) !important;
+        /* Desktop : cacher les éléments mobile */
+        @media (min-width: 768px) {
+            #bottom-nav { display: none !important; }
+            #mobile-ruler-view { display: none !important; }
         }
 
     </style>
@@ -442,7 +349,7 @@
             <div class="app-subtitle">Archery Sight Tape Designer</div>
         </div>
         <button onclick="document.getElementById('help-modal').style.display='flex'" style="margin-left:auto;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.35);color:#38bdf8;border-radius:50%;width:28px;height:28px;font-size:0.9rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Notice d'utilisation">?</button>
-        <button id="day-night-btn" onclick="toggleDayMode()" style="margin-left:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:50%;width:28px;height:28px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Mode jour/nuit">☀️</button>
+        <button id="day-btn" onclick="toggleDay()" style="margin-left:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:50%;width:28px;height:28px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Mode jour">☀️</button>
     </div>
     <div class="tab-bar">
         <button class="tab-btn active" onclick="switchTab('tab-arrow',this)">🏹 Flèche</button>
@@ -1014,6 +921,7 @@
     </div>
 </aside>
 
+<!-- ZONE A4 -->
 <main class="viewport" id="viewport-main">
   <div id="a4-scaler"><div id="page-a4">
         <div id="rulers-container"></div>
@@ -1038,7 +946,7 @@
 
 
         <!-- TABLEAU ANGLES MULTI-DISTANCES -->
-        <div class="card" style="position:relative;z-index:1;isolation:isolate;overflow:hidden;">
+        <div class="card">
             <div class="card-title">📐 Tableau Angles — Format Télémètre</div>
             <p style="font-size:0.65rem;color:var(--text-muted);margin-bottom:10px;">Génère un tableau imprimable (tous angles × toutes distances) à coller sur votre télémètre ou carquois.</p>
             <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;">
@@ -1055,7 +963,7 @@
                 </div>
             </div>
             <button class="btn btn-accent" onclick="generateAngleTable()" style="width:100%;margin-bottom:8px;">📊 Générer le tableau</button>
-            <div id="angle-table-preview" style="display:none;overflow-x:auto;max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;position:relative;z-index:1;isolation:isolate;">;border-radius:6px;"></div>
+            <div id="angle-table-preview" style="display:none;overflow-x:auto;max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;"></div>
         </div>    </div>
 
 </div><!-- /#a4-scaler -->
@@ -1151,81 +1059,7 @@
 
 </main>
 
-
-<!-- ══ VUE RÉGLETTE MOBILE ══ -->
-<div id="mobile-reglette-view">
-    <div id="mobile-reglette-header">
-        <button onclick="hideMobileReglette()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444;border-radius:8px;padding:7px 14px;font-weight:800;font-size:0.75rem;cursor:pointer;min-height:36px;">✕ Fermer</button>
-        <div style="flex:1;text-align:center;font-size:0.72rem;font-weight:700;color:var(--text-muted);">
-            Aperçu Réglette A4
-        </div>
-        <button onclick="mobileFit()" style="background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;border-radius:8px;padding:7px 12px;font-weight:800;font-size:0.75rem;cursor:pointer;min-height:36px;">⊞ Fit</button>
-    </div>
-    <div id="mobile-reglette-viewport">
-        <!-- La page A4 sera clonée ici dynamiquement -->
-        <div id="mobile-a4-scaler">
-            <!-- Clone du contenu A4 injecté par JS -->
-        </div>
-    </div>
-    <div id="mobile-reglette-footer">
-        <button onclick="exportPDF()" class="btn btn-accent" style="flex:1;min-height:44px;">📥 Exporter PDF</button>
-        <div id="mobile-zoom-label" style="min-width:48px;text-align:center;font-size:0.72rem;font-weight:700;color:var(--text-muted);display:flex;align-items:center;justify-content:center;"></div>
-    </div>
-</div>
-
-
-
-<!-- ══ BOTTOM NAV PWA ══ -->
-<nav id="bottom-nav">
-    <button class="bnav-btn active" onclick="mobileTab('tab-arrow',this)" data-tab="tab-arrow">
-        <span class="bnav-icon">🏹</span><span>Flèche</span>
-    </button>
-    <button class="bnav-btn" onclick="mobileTab('tab-sight',this)" data-tab="tab-sight">
-        <span class="bnav-icon">🔭</span><span>Viseur</span>
-    </button>
-    <button class="bnav-btn" onclick="mobileTab('tab-atmo',this)" data-tab="tab-atmo">
-        <span class="bnav-icon">🌤</span><span>Cond.</span>
-    </button>
-    <button class="bnav-btn" onclick="mobileTab('tab-points',this)" data-tab="tab-points">
-        <span class="bnav-icon">🎯</span><span>Points</span>
-    </button>
-    <button class="bnav-btn" onclick="mobileTab('tab-styles',this)" data-tab="tab-styles">
-        <span class="bnav-icon">🎨</span><span>Style</span>
-    </button>
-    <button class="bnav-btn" onclick="showMobileReglette()" data-tab="reglette" id="bnav-reglette">
-        <span class="bnav-icon">📏</span><span>Réglette</span>
-    </button>
-    <button class="bnav-btn" onclick="mobileTab('tab-print',this)" data-tab="tab-print">
-        <span class="bnav-icon">🖨</span><span>Impr.</span>
-    </button>
-    <button class="bnav-btn" onclick="mobileTab('tab-tools',this)" data-tab="tab-tools">
-        <span class="bnav-icon">🛠</span><span>Outils</span>
-    </button>
-</nav>
-
-
-<!-- ══ MODAL NOTICE ══ -->
-<div id="help-modal" style="display:none;position:fixed;inset:0;background:rgba(2,6,23,0.9);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;padding:16px;">
-  <div style="background:#0f172a;border:1px solid #334155;border-radius:16px;width:100%;max-height:85vh;overflow-y:auto;">
-    <div style="display:flex;align-items:center;padding:16px;border-bottom:1px solid #334155;position:sticky;top:0;background:#0f172a;">
-      <div style="font-size:1rem;font-weight:900;color:#f8fafc;flex:1;">Notice d'utilisation</div>
-      <button onclick="document.getElementById('help-modal').style.display='none'" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444;border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:800;min-height:36px;">✕</button>
-    </div>
-    <div style="padding:16px;font-size:0.82rem;line-height:1.7;color:#cbd5e1;">
-      <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:10px;margin-bottom:14px;font-size:0.75rem;">
-        💡 <strong style="color:#38bdf8;">Principe :</strong> 3 points terrain → courbe balistique → réglette A4 à l'échelle de votre viseur.
-      </div>
-      <p style="margin-bottom:10px;"><strong style="color:#f8fafc;">🏹 Flèche</strong> — Sélectionnez votre flèche dans la BDD, entrez FPS et 3 points de calibration.</p>
-      <p style="margin-bottom:10px;"><strong style="color:#f8fafc;">🔭 Viseur</strong> — Choisissez le modèle (ratio auto), la plage de distances.</p>
-      <p style="margin-bottom:10px;"><strong style="color:#f8fafc;">📏 Réglette</strong> — Aperçu A4 avec pinch-to-zoom. Double-tap = fit écran.</p>
-      <p style="margin-bottom:10px;"><strong style="color:#f8fafc;">🖨 Impression</strong> — Exporter PDF ou tableau angles pour télémètre.</p>
-      <p><strong style="color:#f8fafc;">📲 Installation</strong> — Dans Safari : Partager → "Sur l'écran d'accueil" pour utiliser comme app native.</p>
-    </div>
-  </div>
-</div>
-
 <script>
-
 // ═══════════════════════════════════════════════════════════════
 //  SIGHT-MASTER PRO V202
 //  Nouveautés :
@@ -2911,67 +2745,71 @@ function loadPresetDistances(preset) {
 
 // ══ 3. TABLEAU ANGLES MULTI-DISTANCES ═════════════════════════════════
 function generateAngleTable() {
-    const input  = document.getElementById('angle_table_input').value;
-    const fmt    = document.getElementById('angle_table_fmt').value;
-    const ratio  = fv('cfg_ratio', 1.0) * getCalibFactor();
-    const dists  = DISTANCES.filter(isInRange);
-    const title  = document.getElementById('cfg_doc_title').value || 'SIGHT TAPE PRO';
+    const input   = document.getElementById('angle_table_input').value;
+    const fmt     = document.getElementById('angle_table_fmt').value;
+    const ratio   = fv('cfg_ratio', 1.0) * getCalibFactor();
+    const dists   = DISTANCES.filter(isInRange);
+    const preview = document.getElementById('angle-table-preview');
 
-    const angles = input.split(',').map(s => parseFloat(s.trim())).filter(a => !isNaN(a) && a > 0 && a <= 75);
+    const angles = input.split(',')
+        .map(s => parseFloat(s.trim()))
+        .filter(a => !isNaN(a) && a > 0 && a <= 75);
+
     if (angles.length === 0 || dists.length === 0) {
-        showToast('Entrez des angles valides (ex: 5,10,15,20,30,45)', 'rgba(239,68,68,0.9)');
+        preview.style.display = 'block';
+        preview.innerHTML = '<div style="color:#ef4444;font-size:0.7rem;">Entrez des angles valides (ex: 5,10,15,20,30,45)</div>';
         return;
     }
 
-    let rows = '';
-    dists.forEach((d, i) => {
-        const baseU = REG[d] ? REG[d].val : calcUforDist(d);
-        const bg = i % 2 === 0 ? '#f0f4f8' : '#ffffff';
-        rows += '<tr style="background:' + bg + ';">';
-        rows += '<td style="padding:4px 7px;border:0.4pt solid #ccc;font-weight:700;color:#0369a1;">' + d + 'm</td>';
-        const flatVal = fmt === 'mm' ? (baseU * ratio).toFixed(1) + 'mm' : baseU.toFixed(1) + 'U';
-        rows += '<td style="padding:4px 7px;border:0.4pt solid #ccc;text-align:center;color:#64748b;">' + flatVal + '</td>';
-        angles.forEach(a => {
-            const adjU  = calcUforDist(d * Math.cos(a * Math.PI / 180));
-            const val   = fmt === 'mm' ? (adjU * ratio).toFixed(1) + 'mm' : adjU.toFixed(1) + 'U';
-            const diff  = adjU - baseU;
-            const color = Math.abs(diff) < 0.3 ? '#334155' : diff < 0 ? '#16a34a' : '#d97706';
-            rows += '<td style="padding:4px 7px;border:0.4pt solid #ccc;text-align:center;color:' + color + ';">' + val + '</td>';
-        });
-        rows += '</tr>';
+    // Table : lignes = distances, colonnes = angles
+    let html = '<table style="border-collapse:collapse;font-size:0.6rem;width:100%;">';
+    html += '<thead><tr style="background:#1e293b;color:#fff;">';
+    html += '<th style="padding:4px 6px;position:sticky;left:0;background:#1e293b;border-right:1px solid #334155;">Dist</th>';
+    html += '<th style="padding:4px 6px;text-align:center;border-right:1px solid #475569;">0° (plat)</th>';
+    angles.forEach(a => {
+        html += '<th style="padding:4px 6px;text-align:center;">' + a + '°</th>';
     });
+    html += '</tr></thead><tbody>';
 
-    let thead = '<tr style="background:#1e3a5f;color:#fff;">';
-    thead += '<th style="padding:5px 7px;border:0.4pt solid #334;">Dist</th>';
-    thead += '<th style="padding:5px 7px;border:0.4pt solid #334;text-align:center;">0° (plat)</th>';
-    angles.forEach(a => { thead += '<th style="padding:5px 7px;border:0.4pt solid #334;text-align:center;">' + a + '°</th>'; });
-    thead += '</tr>';
+    dists.forEach((d, i) => {
+        const baseU  = REG[d] ? REG[d].val : calcUforDist(d);
+        const baseMm = baseU * ratio;
+        const bg     = i%2===0 ? '#1a2332' : '#151f2d';
+        html += '<tr style="background:' + bg + ';">';
+        html += '<td style="padding:3px 6px;font-weight:700;color:#38bdf8;position:sticky;left:0;background:'+bg+';border-right:1px solid #334155;">' + d + 'm</td>';
+        // Colonne 0°
+        const flatVal = fmt === 'mm' ? baseMm.toFixed(1)+'mm' : baseU.toFixed(1)+'U';
+        html += '<td style="padding:3px 6px;text-align:center;color:#94a3b8;border-right:1px solid #475569;">' + flatVal + '</td>';
+        // Colonnes angles
+        angles.forEach(a => {
+            const cos      = Math.cos(a * Math.PI / 180);
+            const horizD   = d * cos;
+            const adjU     = calcUforDist(horizD);
+            const adjMm    = adjU * ratio;
+            const val      = fmt === 'mm' ? adjMm.toFixed(1)+'mm' : adjU.toFixed(1)+'U';
+            const diff     = adjU - baseU;
+            // Couleur : vert si différence < -0.3U (marque descend = moins de correction)
+            //            orange si différence > 0.3U
+            const color    = Math.abs(diff) < 0.3 ? '#94a3b8' : diff < 0 ? '#22c55e' : '#f59e0b';
+            html += '<td style="padding:3px 6px;text-align:center;color:'+color+';">' + val + '</td>';
+        });
+        html += '</tr>';
+    });
+    html += '</tbody></table>';
 
-    const win = window.open('', '_blank');
-    if (!win) { showToast('Autorisez les popups pour ce site', 'rgba(239,68,68,0.9)'); return; }
-    win.document.write(`<!DOCTYPE html><html><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Angles — ${title}</title>
-<style>
-  @page { size: A4 landscape; margin: 10mm; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: system-ui, sans-serif; background: #fff; color: #000; padding: 10px; }
-  h2 { font-size: 11pt; margin-bottom: 6px; color: #1e3a5f; }
-  table { border-collapse: collapse; width: 100%; font-size: 8pt; }
-  th { background: #1e3a5f; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .legend { font-size: 7pt; color: #666; margin-top: 6px; }
-  .print-btn { margin-bottom: 10px; padding: 8px 18px; background: #0369a1; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 10pt; }
-  @media print { .print-btn { display: none; } }
-</style>
-</head><body>
-<button class="print-btn" onclick="window.print()">🖨 Imprimer</button>
-<h2>📐 Tableau Angles — ${title} · ${new Date().toLocaleDateString('fr-FR')}</h2>
-<table><thead>${thead}</thead><tbody>${rows}</tbody></table>
-<div class="legend">🟢 marque réduite (tir en pente) &nbsp;|&nbsp; 🟠 marque augmentée &nbsp;|&nbsp; colonne 0° = tir plat</div>
-</body></html>`);
-    win.document.close();
+    // Légende + bouton imprimer
+    html += '<div style="margin-top:8px;font-size:0.58rem;color:var(--text-muted);padding:0 4px;">';
+    html += '🟢 marque réduite (tir en descente/montée) · 🟠 marque augmentée · colonne 0° = tir plat';
+    html += '</div>';
 
+    preview.style.display = 'block';
+    preview.innerHTML = html;
+
+    // Bouton imprimer en dehors du tableau scrollable
+    const btnWrap = document.createElement('div');
+    btnWrap.style.marginTop = '8px';
+    btnWrap.innerHTML = '<button class="btn" onclick="printAngleTable()" style="width:100%;font-size:0.68rem;">🖨 Imprimer ce tableau (A4 paysage)</button>';
+    preview.parentElement.appendChild(btnWrap);
 }
 
 function printAngleTable() {
@@ -2991,7 +2829,203 @@ function printAngleTable() {
     win.document.write('<h3>📐 Tableau Angles — ' + title + ' · ' + new Date().toLocaleDateString('fr-FR') + '</h3>');
     win.document.write(content.outerHTML);
     win.document.write('<script>window.onload=function(){window.print();}<\/script>');
-    win.document.write('</body></html>');
+    win.document.write('
+<!-- ══ BOTTOM NAV ══ -->
+<nav id="bottom-nav">
+    <button class="bnav-btn active" onclick="mTab('tab-arrow',this)"><span class="bnav-icon">🏹</span><span>Flèche</span></button>
+    <button class="bnav-btn" onclick="mTab('tab-sight',this)"><span class="bnav-icon">🔭</span><span>Viseur</span></button>
+    <button class="bnav-btn" onclick="mTab('tab-atmo',this)"><span class="bnav-icon">🌤</span><span>Cond.</span></button>
+    <button class="bnav-btn" onclick="mTab('tab-points',this)"><span class="bnav-icon">🎯</span><span>Points</span></button>
+    <button class="bnav-btn" onclick="mTab('tab-styles',this)"><span class="bnav-icon">🎨</span><span>Style</span></button>
+    <button class="bnav-btn" id="bnav-ruler" onclick="openRuler()"><span class="bnav-icon">📏</span><span>Réglette</span></button>
+    <button class="bnav-btn" onclick="mTab('tab-print',this)"><span class="bnav-icon">🖨</span><span>Impr.</span></button>
+    <button class="bnav-btn" onclick="mTab('tab-tools',this)"><span class="bnav-icon">🛠</span><span>Outils</span></button>
+</nav>
+
+<!-- ══ VUE RÉGLETTE MOBILE ══ -->
+<div id="mobile-ruler-view">
+    <div id="mobile-ruler-header">
+        <button onclick="closeRuler()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444;border-radius:8px;padding:7px 14px;font-weight:800;font-size:0.75rem;cursor:pointer;min-height:36px;">✕ Fermer</button>
+        <div style="flex:1;text-align:center;font-size:0.72rem;font-weight:700;color:var(--text-muted);">Aperçu Réglette A4</div>
+        <button onclick="rulerFit()" style="background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;border-radius:8px;padding:7px 12px;font-weight:800;font-size:0.75rem;cursor:pointer;min-height:36px;" id="ruler-zoom-btn">⊞ Fit</button>
+    </div>
+    <div id="mobile-ruler-vp">
+        <div id="mobile-ruler-scaler"></div>
+    </div>
+    <div id="mobile-ruler-footer">
+        <button onclick="exportPDF()" class="btn btn-accent" style="flex:1;">📥 Export PDF</button>
+        <button onclick="window.print()" class="btn" style="flex:1;">🖨 Imprimer</button>
+    </div>
+</div>
+
+
+<script>
+// ── Mode jour/nuit ─────────────────────────────────────────────
+function toggleDay() {
+    const on = document.body.classList.toggle('day-mode');
+    const btn = document.getElementById('day-btn');
+    if (btn) { btn.textContent = on ? '🌙' : '☀️'; }
+    try { localStorage.setItem('stp_day', on?'1':'0'); } catch(e){}
+}
+try { if(localStorage.getItem('stp_day')==='1') { document.body.classList.add('day-mode'); const b=document.getElementById('day-btn'); if(b) b.textContent='🌙'; } } catch(e){}
+
+// ── Navigation mobile ──────────────────────────────────────────
+function mTab(id, btn) {
+    // Utiliser switchTab existant
+    const tabBtn = btn || document.querySelector('.bnav-btn[onclick*="'+id+'"]');
+    switchTab(id, tabBtn);
+    // Sync bottom nav
+    document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+    if (tabBtn) tabBtn.classList.add('active');
+    closeRuler(true);
+}
+
+// ── Vue réglette mobile ────────────────────────────────────────
+let _rS = 1, _rX = 0, _rY = 0;
+
+function openRuler() {
+    renderRuler();
+    const view = document.getElementById('mobile-ruler-view');
+    const scaler = document.getElementById('mobile-ruler-scaler');
+    // Cloner la page A4
+    const orig = document.getElementById('page-a4');
+    scaler.innerHTML = '';
+    const clone = orig.cloneNode(true);
+    clone.id = 'page-a4-clone';
+    clone.style.transform = '';
+    scaler.appendChild(clone);
+    view.classList.add('open');
+    document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('bnav-ruler').classList.add('active');
+    requestAnimationFrame(rulerFit);
+}
+
+function closeRuler(silent) {
+    document.getElementById('mobile-ruler-view').classList.remove('open');
+    if (!silent) {
+        const active = document.querySelector('.tab-content.active');
+        if (active) {
+            const btn = document.querySelector('.bnav-btn[onclick*="'+active.id+'"]');
+            document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+        }
+    }
+}
+
+function rulerFit() {
+    const vp = document.getElementById('mobile-ruler-vp');
+    const sc = document.getElementById('mobile-ruler-scaler');
+    if (!vp || !sc) return;
+    const A4W = 794, A4H = 1123; // px à 96dpi
+    _rS = Math.min(vp.offsetWidth / A4W, vp.offsetHeight / A4H) * 0.96;
+    _rX = (vp.offsetWidth  - A4W * _rS) / 2;
+    _rY = (vp.offsetHeight - A4H * _rS) / 2;
+    applyRuler();
+}
+
+function applyRuler() {
+    const sc = document.getElementById('mobile-ruler-scaler');
+    if (!sc) return;
+    sc.style.transform = 'translate('+_rX+'px,'+_rY+'px) scale('+_rS+')';
+    const btn = document.getElementById('ruler-zoom-btn');
+    if (btn) btn.textContent = '⊞ ' + Math.round(_rS*100) + '%';
+}
+
+// Touch : pan + pinch zoom
+(function(){
+    let t0 = null, px0=0, py0=0, rx0=0, ry0=0, d0=0, s0=1;
+    function dist(a,b){ return Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY); }
+    function mid(a,b){ return {x:(a.clientX+b.clientX)/2, y:(a.clientY+b.clientY)/2}; }
+    document.addEventListener('DOMContentLoaded', ()=>{
+        const vp = document.getElementById('mobile-ruler-vp');
+        if(!vp) return;
+        vp.addEventListener('touchstart', e=>{
+            e.preventDefault();
+            if(e.touches.length===1){
+                t0=[{x:e.touches[0].clientX,y:e.touches[0].clientY}];
+                rx0=_rX; ry0=_rY; d0=0;
+            } else if(e.touches.length===2){
+                d0=dist(e.touches[0],e.touches[1]);
+                const m=mid(e.touches[0],e.touches[1]);
+                px0=m.x; py0=m.y; rx0=_rX; ry0=_rY; s0=_rS; t0=null;
+            }
+        },{passive:false});
+        vp.addEventListener('touchmove', e=>{
+            e.preventDefault();
+            if(e.touches.length===1 && t0){
+                _rX = rx0 + e.touches[0].clientX - t0[0].x;
+                _rY = ry0 + e.touches[0].clientY - t0[0].y;
+                applyRuler();
+            } else if(e.touches.length===2 && d0){
+                const nd=dist(e.touches[0],e.touches[1]);
+                const ratio=nd/d0;
+                _rS=Math.min(Math.max(s0*ratio,0.1),5);
+                const m=mid(e.touches[0],e.touches[1]);
+                _rX = rx0 + (m.x-px0) - (px0-rx0)*(ratio-1);
+                _rY = ry0 + (m.y-py0) - (py0-ry0)*(ratio-1);
+                applyRuler();
+            }
+        },{passive:false});
+        vp.addEventListener('touchend', e=>{
+            t0=null; d0=0;
+        });
+        // Double tap = fit
+        let last=0;
+        vp.addEventListener('touchend', e=>{
+            const now=Date.now();
+            if(now-last<300) rulerFit();
+            last=now;
+        });
+    });
+})();
+
+// ── @media print : afficher page-a4 proprement ────────────────
+window.addEventListener('beforeprint', ()=>{
+    document.getElementById('mobile-ruler-view')?.classList.remove('open');
+});
+
+// ── PWA : manifest + SW inline ────────────────────────────────
+(function(){
+    const manifest = JSON.stringify({
+        name:'Sight Tape Pro', short_name:'SightTape',
+        start_url:'./', display:'standalone',
+        background_color:'#020617', theme_color:'#0f172a',
+        orientation:'portrait',
+        icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%230f172a'/%3E%3Ccircle cx='256' cy='256' r='210' fill='none' stroke='%23ef4444' stroke-width='18'/%3E%3Ccircle cx='256' cy='256' r='140' fill='none' stroke='%23f59e0b' stroke-width='18'/%3E%3Ccircle cx='256' cy='256' r='70' fill='none' stroke='%2322c55e' stroke-width='18'/%3E%3Ccircle cx='256' cy='256' r='28' fill='%2338bdf8'/%3E%3C/svg%3E",sizes:'any',type:'image/svg+xml',purpose:'any maskable'}]
+    });
+    const ml = document.createElement('link');
+    ml.rel='manifest';
+    ml.href = URL.createObjectURL(new Blob([manifest],{type:'application/json'}));
+    document.head.appendChild(ml);
+
+    if('serviceWorker' in navigator){
+        const sw = `const C='stp-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['./'])).then(()=>self.skipWaiting()));});self.addEventListener('activate',e=>e.waitUntil(clients.claim()));self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match('./'))));});`;
+        navigator.serviceWorker.register(
+            URL.createObjectURL(new Blob([sw],{type:'application/javascript'})),
+            {scope:'./'}
+        ).catch(()=>{});
+    }
+
+    // Install banner
+    let dip=null;
+    window.addEventListener('beforeinstallprompt',e=>{
+        e.preventDefault(); dip=e;
+        const b=document.createElement('div');
+        b.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;font-size:0.72rem;font-weight:800;padding:8px 18px;border-radius:20px;cursor:pointer;z-index:9999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+        b.textContent='📲 Installer Sight Tape Pro';
+        b.onclick=()=>{dip.prompt();b.remove();};
+        document.body.appendChild(b);
+        setTimeout(()=>b.remove(),6000);
+    });
+
+    // iOS bounce prevention
+    document.addEventListener('touchmove', e=>{
+        if(!e.target.closest('.tab-content, #mobile-ruler-vp')) e.preventDefault();
+    },{passive:false});
+})();
+</script>
+
+</body></html>');
     win.document.close();
 }
 
@@ -3384,240 +3418,33 @@ function makePDF(jpegDataUrl, pageW, pageH, x, y, imgW, imgH) {
 }
 
 
-
-
-
-// ── Mode Jour/Nuit ─────────────────────────────────────────────────
-function toggleDayMode() {
-    const body = document.body;
-    const btn  = document.getElementById('day-night-btn');
-    const isDay = body.classList.toggle('day-mode');
-    btn.textContent = isDay ? '🌙' : '☀️';
-    btn.title = isDay ? 'Passer en mode nuit' : 'Passer en mode jour';
-    try { localStorage.setItem('stp_daymode', isDay ? '1' : '0'); } catch(e) {}
-}
-// Restaurer la préférence au chargement
-(function() {
-    try {
-        if (localStorage.getItem('stp_daymode') === '1') {
-            document.body.classList.add('day-mode');
-            const btn = document.getElementById('day-night-btn');
-            if (btn) { btn.textContent = '🌙'; btn.title = 'Passer en mode nuit'; }
-        }
-    } catch(e) {}
-})();
-
-
-// Navigation bottom tabs mobile
-function mobileTab(id, btn) {
-    // Cacher la vue réglette si active
-    hideMobileReglette(true);
-    // Activer l'onglet sidebar
-    switchTab(id, btn || document.querySelector('[data-tab="'+id+'"]'));
-    // Mettre à jour bottom nav
-    document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
-    const activeBtn = btn || document.querySelector('[data-tab="'+id+'"]');
-    if (activeBtn) activeBtn.classList.add('active');
-}
-
-// ── Vue Réglette Mobile ────────────────────────────────────────────
-let _mPanX = 0, _mPanY = 0, _mScale = 1;
-let _mTouches = null, _mLastDist = 0, _mLastMid = null;
-
-function showMobileReglette() {
-    // Mettre à jour la réglette avant d'afficher
-    _rndr = false;
-    renderRuler();
-
-    const view = document.getElementById('mobile-reglette-view');
-    view.classList.add('active');
-
-    // Mettre à jour bottom nav
-    document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('bnav-reglette').classList.add('active');
-
-    // Copier le contenu A4 dans le scaler mobile
-    const origPage = document.getElementById('page-a4');
-    const mobileScaler = document.getElementById('mobile-a4-scaler');
-    mobileScaler.innerHTML = origPage.outerHTML;
-    // Supprimer l'id dupliqué pour éviter les conflits
-    mobileScaler.querySelector('#page-a4').id = 'mobile-page-a4';
-
-    // Ajuster le fit initial
-    requestAnimationFrame(() => mobileFit());
-}
-
-function hideMobileReglette(silent) {
-    const view = document.getElementById('mobile-reglette-view');
-    view.classList.remove('active');
-    if (!silent) {
-        // Réactiver le premier onglet visible
-        const activeTab = document.querySelector('.tab-content.active');
-        if (activeTab) {
-            const id = activeTab.id;
-            const btn = document.querySelector('[data-tab="'+id+'"]');
-            if (btn) { document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-        }
-    }
-}
-
-function mobileFit() {
-    const vp = document.getElementById('mobile-reglette-viewport');
-    const scaler = document.getElementById('mobile-a4-scaler');
-    if (!vp || !scaler) return;
-
-    const vpW = vp.offsetWidth;
-    const vpH = vp.offsetHeight;
-    const A4W = 210 * 3.7795;
-    const A4H = 297 * 3.7795;
-
-    const scaleX = vpW / A4W;
-    const scaleY = vpH / A4H;
-    _mScale = Math.min(scaleX, scaleY) * 0.95;
-
-    _mPanX = 0; _mPanY = 0;
-    mobileApplyTransform();
-}
-
-function mobileApplyTransform() {
-    const scaler = document.getElementById('mobile-a4-scaler');
-    const vp     = document.getElementById('mobile-reglette-viewport');
-    if (!scaler || !vp) return;
-
-    const A4W = 210 * 3.7795;
-    const A4H = 297 * 3.7795;
-    const vpW = vp.offsetWidth;
-    const vpH = vp.offsetHeight;
-
-    scaler.style.width  = A4W + 'px';
-    scaler.style.height = A4H + 'px';
-    scaler.style.left   = (vpW/2 - A4W/2 + _mPanX) + 'px';
-    scaler.style.top    = (vpH/2 - A4H/2 + _mPanY) + 'px';
-    scaler.style.transform = 'scale(' + _mScale + ')';
-    scaler.style.transformOrigin = 'center center';
-
-    const lbl = document.getElementById('mobile-zoom-label');
-    if (lbl) lbl.textContent = Math.round(_mScale * 100) + '%';
-}
-
-// Touch events pour pan + pinch-to-zoom
-(function initMobileTouch() {
-    let startTouches = null;
-    let startPanX = 0, startPanY = 0;
-    let startDist = 0, startScale = 1;
-    let startMidX = 0, startMidY = 0;
-
-    function getTouchDist(t1, t2) {
-        const dx = t1.clientX - t2.clientX;
-        const dy = t1.clientY - t2.clientY;
-        return Math.sqrt(dx*dx + dy*dy);
-    }
-    function getTouchMid(t1, t2) {
-        return { x: (t1.clientX + t2.clientX)/2, y: (t1.clientY + t2.clientY)/2 };
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const vp = document.getElementById('mobile-reglette-viewport');
-        if (!vp) return;
-
-        vp.addEventListener('touchstart', e => {
-            e.preventDefault();
-            startPanX = _mPanX; startPanY = _mPanY; startScale = _mScale;
-            if (e.touches.length === 1) {
-                startTouches = [{ x: e.touches[0].clientX, y: e.touches[0].clientY }];
-            } else if (e.touches.length === 2) {
-                startDist  = getTouchDist(e.touches[0], e.touches[1]);
-                const mid  = getTouchMid(e.touches[0], e.touches[1]);
-                startMidX  = mid.x; startMidY = mid.y;
-                startTouches = null;
-            }
-        }, { passive: false });
-
-        vp.addEventListener('touchmove', e => {
-            e.preventDefault();
-            if (e.touches.length === 1 && startTouches) {
-                // Pan
-                _mPanX = startPanX + (e.touches[0].clientX - startTouches[0].x);
-                _mPanY = startPanY + (e.touches[0].clientY - startTouches[0].y);
-                mobileApplyTransform();
-            } else if (e.touches.length === 2 && startDist > 0) {
-                // Pinch zoom
-                const dist = getTouchDist(e.touches[0], e.touches[1]);
-                const ratio = dist / startDist;
-                _mScale = Math.min(Math.max(startScale * ratio, 0.1), 4);
-                // Centrer le zoom sur le milieu des doigts
-                const mid = getTouchMid(e.touches[0], e.touches[1]);
-                const vp  = document.getElementById('mobile-reglette-viewport');
-                const vpW = vp.offsetWidth, vpH = vp.offsetHeight;
-                const ox  = mid.x - vpW/2 - startPanX;
-                const oy  = mid.y - vpH/2 - startPanY;
-                _mPanX = startPanX - ox * (ratio - 1);
-                _mPanY = startPanY - oy * (ratio - 1);
-                mobileApplyTransform();
-            }
-        }, { passive: false });
-
-        vp.addEventListener('touchend', e => {
-            startTouches = null; startDist = 0;
-            // Double tap → fit
-        });
-
-        // Double-tap to fit
-        let lastTap = 0;
-        vp.addEventListener('touchend', e => {
-            const now = Date.now();
-            if (now - lastTap < 300 && e.touches.length === 0) mobileFit();
-            lastTap = now;
-        });
-    });
-})();
-
-// ── PWA Install prompt ─────────────────────────────────────────────
-let _deferredInstall = null;
-window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    _deferredInstall = e;
-    // Afficher un badge sur le bouton outils
-    const badge = document.createElement('div');
-    badge.style.cssText = 'position:fixed;bottom:72px;right:10px;background:var(--accent);color:#000;font-size:0.65rem;font-weight:900;padding:6px 12px;border-radius:20px;cursor:pointer;z-index:2000;box-shadow:0 4px 15px rgba(56,189,248,0.4);';
-    badge.textContent = '📲 Installer l\'app';
-    badge.onclick = () => { _deferredInstall.prompt(); badge.remove(); };
-    document.body.appendChild(badge);
-    setTimeout(() => { if(badge.parentNode) badge.remove(); }, 8000);
-});
-
-
-
-// ── Enregistrement PWA inline (manifest + SW via blob) ────────────
-(function() {
-    // Injecter le manifest
-    const manifestData = '{\n  "name": "Sight Tape Pro",\n  "short_name": "SightTape",\n  "description": "Archery sight tape designer & ballistic calculator",\n  "start_url": "./",\n  "display": "standalone",\n  "background_color": "#020617",\n  "theme_color": "#0f172a",\n  "orientation": "portrait",\n  "icons": [\n    {"src": "data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 512 512\'%3E%3Crect width=\'512\' height=\'512\' rx=\'100\' fill=\'%230f172a\'/%3E%3Ccircle cx=\'256\' cy=\'256\' r=\'220\' fill=\'none\' stroke=\'%23ef4444\' stroke-width=\'16\' opacity=\'.6\'/%3E%3Ccircle cx=\'256\' cy=\'256\' r=\'155\' fill=\'none\' stroke=\'%23f59e0b\' stroke-width=\'16\' opacity=\'.7\'/%3E%3Ccircle cx=\'256\' cy=\'256\' r=\'90\' fill=\'none\' stroke=\'%2322c55e\' stroke-width=\'16\' opacity=\'.8\'/%3E%3Ccircle cx=\'256\' cy=\'256\' r=\'35\' fill=\'%2338bdf8\'/%3E%3Crect x=\'390\' y=\'80\' width=\'52\' height=\'310\' rx=\'16\' fill=\'%231e293b\' stroke=\'%2338bdf8\' stroke-width=\'8\'/%3E%3Cline x1=\'416\' y1=\'120\' x2=\'442\' y2=\'120\' stroke=\'%2338bdf8\' stroke-width=\'10\'/%3E%3Cline x1=\'416\' y1=\'256\' x2=\'442\' y2=\'256\' stroke=\'%2338bdf8\' stroke-width=\'10\'/%3E%3Cline x1=\'416\' y1=\'350\' x2=\'442\' y2=\'350\' stroke=\'%2338bdf8\' stroke-width=\'10\'/%3E%3C/svg%3E", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}\n  ]\n}';
-    const mBlob = new Blob([manifestData], {type:'application/json'});
-    const mUrl  = URL.createObjectURL(mBlob);
-    const link  = document.createElement('link');
-    link.rel = 'manifest'; link.href = mUrl;
-    document.head.appendChild(link);
-
-    // Enregistrer le Service Worker via blob
-    if ('serviceWorker' in navigator) {
-        const swCode = "\nconst CACHE = 'stp-v1';\nconst ASSETS = ['./', './index.html'];\nself.addEventListener('install', e => {\n    e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));\n});\nself.addEventListener('activate', e => {\n    e.waitUntil(clients.claim());\n});\nself.addEventListener('fetch', e => {\n    e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('./'))));\n});\n";
-        const swBlob = new Blob([swCode], {type:'application/javascript'});
-        const swUrl  = URL.createObjectURL(swBlob);
-        navigator.serviceWorker.register(swUrl, {scope: './'})
-            .then(() => console.log('SW registered'))
-            .catch(e => console.log('SW error:', e));
-    }
-
-    // Empêcher le scroll/bounce iOS
-    document.addEventListener('touchmove', e => {
-        if (e.target.closest('.tab-content, #mobile-reglette-viewport, #angle-table-preview, #pocket-preview, #compare-table')) return;
-        e.preventDefault();
-    }, { passive: false });
-
-    // Masquer la barre d'adresse sur scroll
-    window.scrollTo(0, 1);
-})();
-
 </script>
+
+<!-- ══ MODAL NOTICE D'UTILISATION ══ -->
+<div id="help-modal" style="display:none;position:fixed;inset:0;background:rgba(2,6,23,0.85);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#0f172a;border:1px solid #334155;border-radius:16px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.7);">
+    <div style="display:flex;align-items:center;gap:12px;padding:20px 24px 16px;border-bottom:1px solid #334155;position:sticky;top:0;background:#0f172a;z-index:1;">
+      <div><div style="font-size:1.1rem;font-weight:900;color:#f8fafc;">Notice d'utilisation</div>
+      <div style="font-size:0.6rem;color:#64748b;text-transform:uppercase;letter-spacing:2px;">Sight Tape Pro — Guide rapide</div></div>
+      <button onclick="document.getElementById('help-modal').style.display='none'" style="margin-left:auto;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444;border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:800;">✕ Fermer</button>
+    </div>
+    <div style="padding:22px 24px;color:#cbd5e1;font-size:0.82rem;line-height:1.75;">
+      <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:0.75rem;">
+        💡 <strong style="color:#38bdf8;">Principe :</strong> Sight Tape Pro calcule les marques de viseur à partir de 3 points terrain, puis génère une réglette A4 à l'échelle de votre viseur.
+      </div>
+      <div style="margin-bottom:14px;"><strong style="color:#f8fafc;">1 — Onglet Flèche :</strong> Sélectionnez votre flèche dans la BDD ou saisissez manuellement. Renseignez FPS, puis 3 points de calibration terrain (distance + valeur U lue sur le viseur).</div>
+      <div style="margin-bottom:14px;"><strong style="color:#f8fafc;">2 — Onglet Viseur :</strong> Choisissez le modèle (ratio mm/U automatique), la plage de distances, et utilisez les presets IFAA/WA si besoin.</div>
+      <div style="margin-bottom:14px;"><strong style="color:#f8fafc;">3 — Onglet Conditions :</strong> Altitude, température, vent — optionnel mais affine le calcul.</div>
+      <div style="margin-bottom:14px;"><strong style="color:#f8fafc;">4 — Onglet Points :</strong> Visualisez et ajustez chaque marque. Vous pouvez forcer une valeur terrain.</div>
+      <div style="margin-bottom:14px;"><strong style="color:#f8fafc;">5 — Onglet Styles :</strong> Choisissez le design de la réglette.</div>
+      <div style="margin-bottom:14px;"><strong style="color:#f8fafc;">6 — Onglet Impression :</strong> Imprimez en A4 Portrait, marges nulles, 100%. Mesurez l'étalon 100mm et corrigez si besoin.</div>
+      <div style="margin-bottom:14px;"><strong style="color:#f8fafc;">7 — Onglet Outils :</strong> Carte de poche rangefinder, comparateur de setups, tableau angles multi-distances, export PDF.</div>
+      <div style="background:rgba(100,116,139,0.1);border:1px solid #334155;border-radius:8px;padding:10px 14px;font-size:0.73rem;color:#94a3b8;">
+        🖱 <strong style="color:#cbd5e1;">Molette</strong> zoom · <strong style="color:#cbd5e1;">Cliquer-glisser</strong> pan · <strong style="color:#cbd5e1;">Double-clic</strong> vue ajustée
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
