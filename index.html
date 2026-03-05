@@ -16,6 +16,36 @@
             --accent: #38bdf8; --success: #22c55e; --warning: #f59e0b; --danger: #ef4444;
             --border: #334155;
         }
+        /* ── MODE JOUR ─────────────────────────────────────────── */
+        body.day-mode {
+            --bg-main:    #f1f5f9;
+            --bg-panel:   #ffffff;
+            --bg-card:    #f8fafc;
+            --text-primary: #0f172a;
+            --text-muted:   #64748b;
+            --accent:     #0284c7;
+            --success:    #16a34a;
+            --warning:    #d97706;
+            --danger:     #dc2626;
+            --border:     #cbd5e1;
+        }
+        body.day-mode input,
+        body.day-mode select {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.day-mode select option { background: #ffffff; color: #0f172a; }
+        body.day-mode .app-header { background: #0284c7 !important; }
+        body.day-mode .app-title  { color: #ffffff !important; }
+        body.day-mode .app-title span { color: #e0f2fe !important; }
+        body.day-mode #bottom-nav { background: #ffffff !important; border-top-color: #cbd5e1 !important; }
+        body.day-mode .bnav-btn   { color: #94a3b8 !important; }
+        body.day-mode .bnav-btn.active { color: #0284c7 !important; }
+        body.day-mode .tab-bar    { background: #f1f5f9 !important; }
+        body.day-mode .stat-box   { background: #f1f5f9 !important; }
+        body.day-mode .btn        { border: 1px solid #cbd5e1; }
+        body.day-mode .btn-accent { background: #0284c7 !important; color: #fff !important; border: none !important; }
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
         body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-main); color: var(--text-primary); display: flex; height: 100vh; width: 100vw; overflow: hidden; }
 
@@ -24,8 +54,8 @@
         .tab-btn { flex: 1 0 auto; min-width: 80px; padding: 9px 4px; font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; cursor: pointer; border: none; background: transparent; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.2s; text-align:center; }
         .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
         .tab-btn:hover:not(.active) { color: var(--text-primary); }
-        .tab-content { display: none; flex-direction: column; overflow-y: auto; padding: 18px; flex: 1; scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
-        .tab-content > .card { contain: layout; }
+        .tab-content { display: none; flex-direction: column; overflow-y: auto; overflow-x: hidden; padding: 18px; flex: 1; scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
+        .tab-content > .card { contain: layout; }ain: layout; }
         .tab-content.active { display: flex; }
 
         .card { background: var(--bg-card); border-radius: 12px; padding: 16px; margin-bottom: 14px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
@@ -181,34 +211,43 @@
         #viewport-main.panning { cursor: grabbing; }
 
         @media print {
-            /* Tout masquer */
-            body > * { display: none !important; }
-            #bottom-nav { display: none !important; }
-            #mobile-reglette-view { display: none !important; }
-            #help-modal { display: none !important; }
-
-            /* Afficher uniquement le main avec page-a4 */
-            #viewport-main {
-                display: flex !important;
-                position: fixed !important;
-                top: 0 !important; left: 0 !important;
-                width: 210mm !important; height: 297mm !important;
-                background: white !important;
-                align-items: center !important;
-                justify-content: center !important;
+            /* Reset complet pour l'impression */
+            html, body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                height: auto !important;
+                width: auto !important;
                 overflow: visible !important;
+                position: static !important;
+                display: block !important;
+            }
+            /* Masquer tout sauf la page A4 */
+            body > * { display: none !important; }
+            /* Rendre le main visible */
+            #viewport-main {
+                display: block !important;
+                position: static !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                background: #ffffff !important;
+                overflow: visible !important;
+                flex-grow: 0 !important;
             }
             #a4-scaler {
                 transform: none !important;
                 position: static !important;
+                display: block !important;
             }
             #page-a4 {
+                display: block !important;
                 box-shadow: none !important;
                 margin: 0 !important;
                 border: none !important;
                 width: 210mm !important;
                 height: 297mm !important;
                 transform: none !important;
+                background: #ffffff !important;
+                position: static !important;
             }
             #page-a4, #page-a4 * {
                 -webkit-print-color-adjust: exact !important;
@@ -242,6 +281,7 @@
             display: flex;
             flex-direction: column;
             order: 1;
+            contain: strict;
         }
 
         /* App header compact mobile */
@@ -330,7 +370,7 @@
             position: fixed;
             inset: 0;
             background: var(--bg-main);
-            z-index: 500;
+            z-index: 800;
             flex-direction: column;
         }
         #mobile-reglette-view.active { display: flex; }
@@ -402,6 +442,7 @@
             <div class="app-subtitle">Archery Sight Tape Designer</div>
         </div>
         <button onclick="document.getElementById('help-modal').style.display='flex'" style="margin-left:auto;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.35);color:#38bdf8;border-radius:50%;width:28px;height:28px;font-size:0.9rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Notice d'utilisation">?</button>
+        <button id="day-night-btn" onclick="toggleDayMode()" style="margin-left:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:50%;width:28px;height:28px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Mode jour/nuit">☀️</button>
     </div>
     <div class="tab-bar">
         <button class="tab-btn active" onclick="switchTab('tab-arrow',this)">🏹 Flèche</button>
@@ -2870,74 +2911,67 @@ function loadPresetDistances(preset) {
 
 // ══ 3. TABLEAU ANGLES MULTI-DISTANCES ═════════════════════════════════
 function generateAngleTable() {
-    const input   = document.getElementById('angle_table_input').value;
-    const fmt     = document.getElementById('angle_table_fmt').value;
-    const ratio   = fv('cfg_ratio', 1.0) * getCalibFactor();
-    const dists   = DISTANCES.filter(isInRange);
-    const preview = document.getElementById('angle-table-preview');
+    const input  = document.getElementById('angle_table_input').value;
+    const fmt    = document.getElementById('angle_table_fmt').value;
+    const ratio  = fv('cfg_ratio', 1.0) * getCalibFactor();
+    const dists  = DISTANCES.filter(isInRange);
+    const title  = document.getElementById('cfg_doc_title').value || 'SIGHT TAPE PRO';
 
-    const angles = input.split(',')
-        .map(s => parseFloat(s.trim()))
-        .filter(a => !isNaN(a) && a > 0 && a <= 75);
-
+    const angles = input.split(',').map(s => parseFloat(s.trim())).filter(a => !isNaN(a) && a > 0 && a <= 75);
     if (angles.length === 0 || dists.length === 0) {
-        preview.style.display = 'block';
-        preview.innerHTML = '<div style="color:#ef4444;font-size:0.7rem;">Entrez des angles valides (ex: 5,10,15,20,30,45)</div>';
+        showToast('Entrez des angles valides (ex: 5,10,15,20,30,45)', 'rgba(239,68,68,0.9)');
         return;
     }
 
-    // Table : lignes = distances, colonnes = angles
-    let html = '<table style="border-collapse:collapse;font-size:0.6rem;width:100%;">';
-    html += '<thead><tr style="background:#1e293b;color:#fff;">';
-    html += '<th style="padding:4px 6px;position:sticky;left:0;background:#1e293b;border-right:1px solid #334155;">Dist</th>';
-    html += '<th style="padding:4px 6px;text-align:center;border-right:1px solid #475569;">0° (plat)</th>';
-    angles.forEach(a => {
-        html += '<th style="padding:4px 6px;text-align:center;">' + a + '°</th>';
-    });
-    html += '</tr></thead><tbody>';
-
+    let rows = '';
     dists.forEach((d, i) => {
-        const baseU  = REG[d] ? REG[d].val : calcUforDist(d);
-        const baseMm = baseU * ratio;
-        const bg     = i%2===0 ? '#1a2332' : '#151f2d';
-        html += '<tr style="background:' + bg + ';">';
-        html += '<td style="padding:3px 6px;font-weight:700;color:#38bdf8;position:sticky;left:0;background:'+bg+';border-right:1px solid #334155;">' + d + 'm</td>';
-        // Colonne 0°
-        const flatVal = fmt === 'mm' ? baseMm.toFixed(1)+'mm' : baseU.toFixed(1)+'U';
-        html += '<td style="padding:3px 6px;text-align:center;color:#94a3b8;border-right:1px solid #475569;">' + flatVal + '</td>';
-        // Colonnes angles
+        const baseU = REG[d] ? REG[d].val : calcUforDist(d);
+        const bg = i % 2 === 0 ? '#f0f4f8' : '#ffffff';
+        rows += '<tr style="background:' + bg + ';">';
+        rows += '<td style="padding:4px 7px;border:0.4pt solid #ccc;font-weight:700;color:#0369a1;">' + d + 'm</td>';
+        const flatVal = fmt === 'mm' ? (baseU * ratio).toFixed(1) + 'mm' : baseU.toFixed(1) + 'U';
+        rows += '<td style="padding:4px 7px;border:0.4pt solid #ccc;text-align:center;color:#64748b;">' + flatVal + '</td>';
         angles.forEach(a => {
-            const cos      = Math.cos(a * Math.PI / 180);
-            const horizD   = d * cos;
-            const adjU     = calcUforDist(horizD);
-            const adjMm    = adjU * ratio;
-            const val      = fmt === 'mm' ? adjMm.toFixed(1)+'mm' : adjU.toFixed(1)+'U';
-            const diff     = adjU - baseU;
-            // Couleur : vert si différence < -0.3U (marque descend = moins de correction)
-            //            orange si différence > 0.3U
-            const color    = Math.abs(diff) < 0.3 ? '#94a3b8' : diff < 0 ? '#22c55e' : '#f59e0b';
-            html += '<td style="padding:3px 6px;text-align:center;color:'+color+';">' + val + '</td>';
+            const adjU  = calcUforDist(d * Math.cos(a * Math.PI / 180));
+            const val   = fmt === 'mm' ? (adjU * ratio).toFixed(1) + 'mm' : adjU.toFixed(1) + 'U';
+            const diff  = adjU - baseU;
+            const color = Math.abs(diff) < 0.3 ? '#334155' : diff < 0 ? '#16a34a' : '#d97706';
+            rows += '<td style="padding:4px 7px;border:0.4pt solid #ccc;text-align:center;color:' + color + ';">' + val + '</td>';
         });
-        html += '</tr>';
+        rows += '</tr>';
     });
-    html += '</tbody></table>';
 
-    // Légende + bouton imprimer
-    html += '<div style="margin-top:8px;font-size:0.58rem;color:var(--text-muted);padding:0 4px;">';
-    html += '🟢 marque réduite (tir en descente/montée) · 🟠 marque augmentée · colonne 0° = tir plat';
-    html += '</div>';
+    let thead = '<tr style="background:#1e3a5f;color:#fff;">';
+    thead += '<th style="padding:5px 7px;border:0.4pt solid #334;">Dist</th>';
+    thead += '<th style="padding:5px 7px;border:0.4pt solid #334;text-align:center;">0° (plat)</th>';
+    angles.forEach(a => { thead += '<th style="padding:5px 7px;border:0.4pt solid #334;text-align:center;">' + a + '°</th>'; });
+    thead += '</tr>';
 
-    preview.style.display = 'block';
-    preview.innerHTML = html;
+    const win = window.open('', '_blank');
+    if (!win) { showToast('Autorisez les popups pour ce site', 'rgba(239,68,68,0.9)'); return; }
+    win.document.write(`<!DOCTYPE html><html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Angles — ${title}</title>
+<style>
+  @page { size: A4 landscape; margin: 10mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #fff; color: #000; padding: 10px; }
+  h2 { font-size: 11pt; margin-bottom: 6px; color: #1e3a5f; }
+  table { border-collapse: collapse; width: 100%; font-size: 8pt; }
+  th { background: #1e3a5f; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .legend { font-size: 7pt; color: #666; margin-top: 6px; }
+  .print-btn { margin-bottom: 10px; padding: 8px 18px; background: #0369a1; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 10pt; }
+  @media print { .print-btn { display: none; } }
+</style>
+</head><body>
+<button class="print-btn" onclick="window.print()">🖨 Imprimer</button>
+<h2>📐 Tableau Angles — ${title} · ${new Date().toLocaleDateString('fr-FR')}</h2>
+<table><thead>${thead}</thead><tbody>${rows}</tbody></table>
+<div class="legend">🟢 marque réduite (tir en pente) &nbsp;|&nbsp; 🟠 marque augmentée &nbsp;|&nbsp; colonne 0° = tir plat</div>
+</body></html>`);
+    win.document.close();
 
-    // Bouton imprimer — éviter les doublons
-    const existingBtn = preview.parentElement.querySelector('#angle-print-btn');
-    if (existingBtn) existingBtn.remove();
-    const btnWrap = document.createElement('div');
-    btnWrap.id = 'angle-print-btn';
-    btnWrap.style.marginTop = '8px';
-    btnWrap.innerHTML = '<button class="btn" onclick="printAngleTable()" style="width:100%;font-size:0.68rem;">🖨 Imprimer ce tableau (A4 paysage)</button>';
-    preview.parentElement.appendChild(btnWrap);
 }
 
 function printAngleTable() {
@@ -3353,9 +3387,26 @@ function makePDF(jpegDataUrl, pageW, pageH, x, y, imgW, imgH) {
 
 
 
-// ══════════════════════════════════════════════════════════════════
-// PWA MOBILE — Navigation + Vue Réglette Touch
-// ══════════════════════════════════════════════════════════════════
+// ── Mode Jour/Nuit ─────────────────────────────────────────────────
+function toggleDayMode() {
+    const body = document.body;
+    const btn  = document.getElementById('day-night-btn');
+    const isDay = body.classList.toggle('day-mode');
+    btn.textContent = isDay ? '🌙' : '☀️';
+    btn.title = isDay ? 'Passer en mode nuit' : 'Passer en mode jour';
+    try { localStorage.setItem('stp_daymode', isDay ? '1' : '0'); } catch(e) {}
+}
+// Restaurer la préférence au chargement
+(function() {
+    try {
+        if (localStorage.getItem('stp_daymode') === '1') {
+            document.body.classList.add('day-mode');
+            const btn = document.getElementById('day-night-btn');
+            if (btn) { btn.textContent = '🌙'; btn.title = 'Passer en mode nuit'; }
+        }
+    } catch(e) {}
+})();
+
 
 // Navigation bottom tabs mobile
 function mobileTab(id, btn) {
